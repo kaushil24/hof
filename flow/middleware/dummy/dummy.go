@@ -19,10 +19,22 @@ func NewDummy(opts flags.RootPflagpole, popts flags.FlowPflagpole) *Dummy {
 }
 
 func (M *Dummy) Run(ctx *hofcontext.Context) (results interface{}, err error) {
-	fmt.Println("dummy: pre @", M.val.Path())
-	// should this happen during discovery? (in Apply)
+	// Print important variables from the context
+	fmt.Printf("Context: %+v\n", ctx)
+	fmt.Printf("Current Path: %s\n", M.val.Path())
+
+	// Modify cue.Value if it matches a condition (e.g., has a specific field)
+	if field, err := M.val.LookupField("modifyMe"); err == nil {
+		newVal := field.Value.FillPath(cue.ParsePath("newField"), "modified")
+		M.val = M.val.FillPath(cue.ParsePath(field.Selector), newVal)
+		fmt.Printf("Modified value: %v\n", M.val)
+	}
+
+	// Run the next middleware in the chain
 	result, err := M.next.Run(ctx)
-	fmt.Println("dummy: post @", M.val.Path())
+
+	fmt.Printf("Result: %+v\n", result)
+	fmt.Printf("Error: %v\n", err)
 
 	return result, err
 }
@@ -47,7 +59,7 @@ func (M *Dummy) Apply(ctx *hofcontext.Context, runner hofcontext.RunnerFunc) hof
 			return next, nil
 		}
 
-		fmt.Println("dummy: found @", val.Path())
+		fmt.Printf("Dummy middleware applied to: %s\n", val.Path())
 
 		return &Dummy{
 			val:  val,

@@ -85,7 +85,7 @@ func Copy(ctx *Context) *Context {
 		Stdout: ctx.Stdout,
 		Stderr: ctx.Stderr,
 
-		Verbosity: ctx.Verbosity,
+		Verbosity:  ctx.Verbosity,
 		ShowErrors: ctx.ShowErrors,
 
 		CUELock:  ctx.CUELock,

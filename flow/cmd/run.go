@@ -38,7 +38,7 @@ func prepFlow(R *Runtime, val cue.Value) (*flow.Flow, error) {
 	middleware.UseDefaults(c, R.Flags, R.FlowFlags)
 	tasks.RegisterDefaults(c)
 
-	f, err := flow.OldFlow(c, val)
+	f, err := flow.OldFlow(c, val, R.CueContext)
 	f.Node = node
 	return f, err
 }
@@ -112,7 +112,7 @@ func Run(args []string, rflags flags.RootPflagpole, cflags flags.FlowPflagpole) 
 				i, err = Src.List()
 				iter = &i
 			default:
-				fmt.Println("unknown iterable", Src.Validate())	
+				fmt.Println("unknown iterable", Src.Validate())
 			}
 			if err != nil {
 				return err
@@ -122,9 +122,9 @@ func Run(args []string, rflags flags.RootPflagpole, cflags flags.FlowPflagpole) 
 			for iter.Next() {
 				data := iter.Value()
 
-				wp.Submit(func(){
+				wp.Submit(func() {
 					fmt.Println(">>>", data.Path())
-		
+
 					v := WF.Root.FillPath(cue.ParsePath(dst), data)
 
 					err := fn(v)
@@ -134,19 +134,19 @@ func Run(args []string, rflags flags.RootPflagpole, cflags flags.FlowPflagpole) 
 					}
 					fmt.Println()
 				})
-			}	
+			}
 
 			wp.StopWait()
 
 		} else {
-			wp.Submit(func(){
+			wp.Submit(func() {
 				err := fn(WF.Root)
 				if err != nil {
 					fmt.Println(err)
 					errCnt += 1
 				}
 			})
-		} 
+		}
 	}
 
 	wp.StopWait()
@@ -173,7 +173,6 @@ func printFinalContext(ctx *flowctx.Context) error {
 	for _, t := range tm {
 		ti[t.CueTask.Index()] = t
 	}
-
 
 	fmt.Println("\n\n======= final =========")
 
@@ -232,7 +231,6 @@ func printFinalContext(ctx *flowctx.Context) error {
 			return rows, nil
 		},
 	)
-
 
 	return nil
 }
