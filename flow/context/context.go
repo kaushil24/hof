@@ -56,9 +56,11 @@ type Context struct {
 	// map of chan?
 	Mailbox *sync.Map
 
-	// channels for
-	// - stats & progress
+	// CUE context
+	CueContext *cue.Context
 
+	// output vars
+	GlobalVars map[string]interface{}
 }
 
 func New() *Context {
@@ -72,6 +74,8 @@ func New() *Context {
 		TaskRegistry: new(sync.Map),
 		Tasks:        new(sync.Map),
 		Pools:        new(sync.Map),
+		CueContext:   nil,
+		GlobalVars:   make(map[string]interface{}),
 	}
 }
 
@@ -96,6 +100,9 @@ func Copy(ctx *Context) *Context {
 		TaskRegistry: ctx.TaskRegistry,
 		Tasks:        ctx.Tasks,
 		Pools:        ctx.Pools,
+
+		CueContext: ctx.CueContext,
+		GlobalVars: ctx.GlobalVars,
 	}
 }
 

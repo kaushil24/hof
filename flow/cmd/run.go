@@ -32,13 +32,14 @@ func prepFlow(R *Runtime, val cue.Value) (*flow.Flow, error) {
 	c.Stderr = os.Stderr
 	c.Verbosity = R.Flags.Verbosity
 	c.ShowErrors = R.Flags.AllErrors
+	c.CueContext = R.CueContext
 
 	// how to inject tags into original value
 	// fill / return value
 	middleware.UseDefaults(c, R.Flags, R.FlowFlags)
 	tasks.RegisterDefaults(c)
 
-	f, err := flow.OldFlow(c, val, R.CueContext)
+	f, err := flow.OldFlow(c, val)
 	f.Node = node
 	return f, err
 }
